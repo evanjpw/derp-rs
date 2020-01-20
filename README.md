@@ -80,7 +80,13 @@ This has the additional salutary effect of requiring data structures
 to be moved around, which means dealing with Rust being Rust and
 enforcing referential stricture.
 
- *
+As such, Crate [genawaiter][3]
+## Future Work
+ * There are *NO DOC COMMENTS*
+ * Colo(u)rs using the [ANSI term crate][4]
+ * Make to be more OO?
 
 [1]: https://doc.rust-lang.org/book/ch12-00-an-io-project.html
 [2]: https://docs.rs/clap/2.33.0/clap/
+[3]: http://docs.rs/genawaiter/0.2.2/genawaiter/index.html
+[4]: https://rust-lang-nursery.github.io/rust-cookbook/cli/ansi_terminal.html#ansi-terminal

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>derp-rs</title>
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+    <h1 class="title">derp-rs</h1>
+    <nav id="TOC"><ul>
+<li><a href="#usage">0.1 Usage</a><ul></ul></li>
+<li><a href="#why-this-is-here">0.2 Why This Is Here</a><ul>
+<li><a href="#non-concerns">0.2.1 Non-Concerns</a><ul></ul></li></ul></li>
+<li><a href="#the-process-of-getting-here">0.3 The Process of Getting Here</a><ul></ul></li>
+<li><a href="#future-work">0.4 Future Work</a><ul></ul></li></ul></nav><p>A crappy knockoff of &quot;grep&quot; that exists only as a way to teach myself Rust.</p>
+<p>I have been paying attention to Rust for years, and have seen it
+evolve over time, but never actually tried to write any Rust code.</p>
+<p>For personal reasons, it has become of more interest recently, so
+this seemed an excellent first program, since it had many dimensions
+for a little program.</p>
+<p>(Amusingly, <a href="https://doc.rust-lang.org/book/ch12-00-an-io-project.html">one of the Rust books/online resources</a>
+uses building <code>grep</code> as an exercise. When I saw that, I avoided
+reading that book further, so as to not contaminate my experience.
+But it is entertaining that they decided on the same little program
+to teach Rust. I must be onto something.)</p>
+<h2 id="usage" class="section-header"><a href="#usage">0.1 Usage</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="ident">USAGE</span>:
+    <span class="ident">derp</span> [<span class="ident">FLAGS</span>] <span class="op">&lt;</span><span class="ident">PATTERN</span><span class="op">&gt;</span> [<span class="ident">PATH</span>]...
+
+<span class="ident">FLAGS</span>:
+    <span class="op">-</span><span class="ident">d</span>               <span class="ident">Sets</span> <span class="ident">the</span> <span class="ident">level</span> <span class="ident">of</span> <span class="ident">debugging</span> <span class="ident">information</span>
+    <span class="op">-</span><span class="ident">h</span>, <span class="op">-</span><span class="op">-</span><span class="ident">help</span>       <span class="ident">Prints</span> <span class="ident">help</span> <span class="ident">information</span>
+    <span class="op">-</span><span class="ident">V</span>, <span class="op">-</span><span class="op">-</span><span class="ident">version</span>    <span class="ident">Prints</span> <span class="ident">version</span> <span class="ident">information</span>
+
+<span class="ident">ARGS</span>:
+    <span class="op">&lt;</span><span class="ident">PATTERN</span><span class="op">&gt;</span>    <span class="ident">The</span> <span class="ident">pattern</span> (<span class="ident">regular</span> <span class="ident">expression</span>) <span class="ident">to</span> <span class="ident">search</span> <span class="kw">for</span>
+    <span class="op">&lt;</span><span class="ident">PATH</span><span class="op">&gt;</span>...    <span class="ident">The</span> <span class="ident">path</span> <span class="ident">to</span> <span class="ident">search</span> <span class="kw">for</span> <span class="ident">the</span> <span class="ident">pattern</span></pre></div>
+<h2 id="why-this-is-here" class="section-header"><a href="#why-this-is-here">0.2 Why This Is Here</a></h2>
+<p>The purpose of the project is, as I said above, to teach myself
+Rust. As such, I had some goals, and some non-concerns:</p>
+<p>###Goals</p>
+<ul>
+<li>Make <code>derp</code> reasonably fully featured. So, full command line parsing
+with many options, the ability to specify no paths or many, full
+regular expression search.</li>
+<li>Build it in as &quot;difficult&quot; a way as possible, by which I mean build
+it to require moving data, errors and state around. That is &quot;difficult&quot;
+because of the need to work within the language's value lifetime
+system and reference checking.</li>
+<li>Make it as clean, readable &amp; clear as possible.</li>
+<li>Try to be as idiomatic as possible for the language.</li>
+</ul>
+<h3 id="non-concerns" class="section-header"><a href="#non-concerns">0.2.1 Non-Concerns</a></h3>
+<ul>
+<li>Speed &amp; Efficiency (but if it is built properly that should take care of itself)</li>
+<li>Perfect use of all of Rust and it's idioms. I can't absorb
+the whole language in a day, and I am temperamentally incapable
+of spending days reading without coding, so I will make mistakes
+and miss things that I could have used. And that is OK.</li>
+<li>Doing this right the first time. I know that an experienced
+Rust programmer will likely look at my code an grimace. That's
+excellent! It means I have an interesting path to follow.</li>
+</ul>
+<h2 id="the-process-of-getting-here" class="section-header"><a href="#the-process-of-getting-here">0.3 The Process of Getting Here</a></h2>
+<p>I began with an empty <code>fn main</code> and began simultaneously reading
+online resources and writing code.</p>
+<p>At first I just did command line processing, and I very quickly found
+a crate that had me covered (<a href="https://docs.rs/clap/2.33.0/clap/"><code>clap</code></a>). That was deceptively simple,
+the only mildly difficult thing being determining how to get access
+to the optional, potentially multiple <code>PATH</code> arguments.</p>
+<p>This is where I needed to make architectural decisions.</p>
+<p>Having read of the very sensible convention in the Rust community
+of putting most of the code in <code>lib.rs</code>, and having <code>main.rs</code> act as a
+client of that library, I decided to structure regular expression
+search as a library that the <code>main</code> function could make use of to
+build a command line application. That, then, suggests that the
+<code>main</code> code be responsible for printing the matched lines, and
+the <code>lib</code> be a file searching line matcher.</p>
+<p>This has the additional salutary effect of requiring data structures
+to be moved around, which means dealing with Rust being Rust and
+enforcing referential stricture.</p>
+<p>As such, Crate <a href="http://docs.rs/genawaiter/0.2.2/genawaiter/index.html">genawaiter</a></p>
+<h2 id="future-work" class="section-header"><a href="#future-work">0.4 Future Work</a></h2>
+<ul>
+<li>There are <em>NO DOC COMMENTS</em></li>
+<li>Colo(u)rs using the <a href="https://rust-lang-nursery.github.io/rust-cookbook/cli/ansi_terminal.html#ansi-terminal">ANSI term crate</a></li>
+<li>Make to be more OO?</li>
+</ul>
+
+    
+</body>
+</html>
