@@ -45,6 +45,11 @@ because of the need to work within the language's value lifetime
 system and reference checking.
 * Make it as clean, readable & clear as possible.
 * Try to be as idiomatic as possible for the language.
+* Stick with Rust Stable, to ensure that I am working with the fully
+baked language.
+* Avoid ARC as much as I can. If I my intent is to write idiomatic code
+(what's the equivalent of Pythonic for Rust, RUSTERIFIC?), I would
+lean toward preferring stack allocation with fixed lifetimes.
 
 ### Non-Concerns
 * Speed & Efficiency (but if it is built properly that should take care of itself)
@@ -56,7 +61,10 @@ and miss things that I could have used. And that is OK.
 Rust programmer will likely look at my code an grimace. That's
 excellent! It means I have an interesting path to follow.
 
-## The Process of Getting Here
+## The Process of Getting Here (A Boring Story)
+
+Are you certain that you want to read this blather? Maybe. It is
+the impressions of someone who was a C programmer, often in very
 
 I began with an empty `fn main` and began simultaneously reading
 online resources and writing code.
@@ -80,13 +88,52 @@ This has the additional salutary effect of requiring data structures
 to be moved around, which means dealing with Rust being Rust and
 enforcing referential stricture.
 
-As such, Crate [genawaiter][3]
+As such, I tried to structure `main.rs` as a client of '`lib.rs`
+in a relatively clean way. And it seemed to me that the most sensible
+division of labor was to have clients of the search library be
+responsible for the display (or alternative use) of search
+results from the library.
+
+This militates that there be some clean mechanism for returning
+these results. The most brute force such method is for the library
+to return some collection that carries the results. This is a
+wasteful approach even when done superbly, and it is relatively
+simple to do it badly.
+
+An iterator seems superior, but if it masks the afore mentioned collection
+it is of little benefit. Some languages, Python for example, have
+*generators*. These make it possible to return results as the
+search computes them, while maintaining state transparently.
+
+Rust Stable does not have generators, and building them from [stone
+knives and bear skins][5] didn't seem reasonable. Fortunately, there was a Crate
+for that: [genawaiter][3]. This looked fantastic, and it probably is. But I
+was never able to chase out the referential peril that the compiler
+protects us from with this approach (probably me being stupid), so I
+looked elsewhere.
+
+I decided to bite the bullet and do the brute force thing of
+keeping a collection. This quickly became an unpleasant mess,
+most likely because (as above) I am (relative to Rust) stupid.
+
+Eventually, I decided to be old school. As a, venerable C programmer,
+I tended to structure code to send data _down_ the call stack as
+much as possible and to rarely send it _up_ the stack. The obvious
+reason for this is that callers up the stack can manage their own
+crap, so the callees don't need to worry about allocation and
+cleanup.
+
+
 ## Future Work
  * There are *NO DOC COMMENTS*
  * Colo(u)rs using the [ANSI term crate][4]
  * Make to be more OO?
+ * Did I mention _DOC COMMENTS_?
+ * Unit tests?
+ * Integration tests?
 
 [1]: https://doc.rust-lang.org/book/ch12-00-an-io-project.html
 [2]: https://docs.rs/clap/2.33.0/clap/
 [3]: http://docs.rs/genawaiter/0.2.2/genawaiter/index.html
 [4]: https://rust-lang-nursery.github.io/rust-cookbook/cli/ansi_terminal.html#ansi-terminal
+[5]: https://images.app.goo.gl/e2gUffHdtj9WUKyZ8

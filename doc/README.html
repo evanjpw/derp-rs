@@ -23,7 +23,7 @@
 <li><a href="#usage">0.1 Usage</a><ul></ul></li>
 <li><a href="#why-this-is-here">0.2 Why This Is Here</a><ul>
 <li><a href="#non-concerns">0.2.1 Non-Concerns</a><ul></ul></li></ul></li>
-<li><a href="#the-process-of-getting-here">0.3 The Process of Getting Here</a><ul></ul></li>
+<li><a href="#the-process-of-getting-here-a-boring-story">0.3 The Process of Getting Here (A Boring Story)</a><ul></ul></li>
 <li><a href="#future-work">0.4 Future Work</a><ul></ul></li></ul></nav><p>A crappy knockoff of &quot;grep&quot; that exists only as a way to teach myself Rust.</p>
 <p>I have been paying attention to Rust for years, and have seen it
 evolve over time, but never actually tried to write any Rust code.</p>
@@ -62,6 +62,11 @@ because of the need to work within the language's value lifetime
 system and reference checking.</li>
 <li>Make it as clean, readable &amp; clear as possible.</li>
 <li>Try to be as idiomatic as possible for the language.</li>
+<li>Stick with Rust Stable, to ensure that I am working with the fully
+baked language.</li>
+<li>Avoid ARC as much as I can. If I my intent is to write idiomatic code
+(what's the equivalent of Pythonic for Rust, RUSTERIFIC?), I would
+lean toward preferring stack allocation with fixed lifetimes.</li>
 </ul>
 <h3 id="non-concerns" class="section-header"><a href="#non-concerns">0.2.1 Non-Concerns</a></h3>
 <ul>
@@ -74,7 +79,9 @@ and miss things that I could have used. And that is OK.</li>
 Rust programmer will likely look at my code an grimace. That's
 excellent! It means I have an interesting path to follow.</li>
 </ul>
-<h2 id="the-process-of-getting-here" class="section-header"><a href="#the-process-of-getting-here">0.3 The Process of Getting Here</a></h2>
+<h2 id="the-process-of-getting-here-a-boring-story" class="section-header"><a href="#the-process-of-getting-here-a-boring-story">0.3 The Process of Getting Here (A Boring Story)</a></h2>
+<p>Are you certain that you want to read this blather? Maybe. It is
+the impressions of someone who was a C programmer, often in very</p>
 <p>I began with an empty <code>fn main</code> and began simultaneously reading
 online resources and writing code.</p>
 <p>At first I just did command line processing, and I very quickly found
@@ -92,12 +99,43 @@ the <code>lib</code> be a file searching line matcher.</p>
 <p>This has the additional salutary effect of requiring data structures
 to be moved around, which means dealing with Rust being Rust and
 enforcing referential stricture.</p>
-<p>As such, Crate <a href="http://docs.rs/genawaiter/0.2.2/genawaiter/index.html">genawaiter</a></p>
+<p>As such, I tried to structure <code>main.rs</code> as a client of '<code>lib.rs</code>
+in a relatively clean way. And it seemed to me that the most sensible
+division of labor was to have clients of the search library be
+responsible for the display (or alternative use) of search
+results from the library.</p>
+<p>This militates that there be some clean mechanism for returning
+these results. The most brute force such method is for the library
+to return some collection that carries the results. This is a
+wasteful approach even when done superbly, and it is relatively
+simple to do it badly.</p>
+<p>An iterator seems superior, but if it masks the afore mentioned collection
+it is of little benefit. Some languages, Python for example, have
+<em>generators</em>. These make it possible to return results as the
+search computes them, while maintaining state transparently.</p>
+<p>Rust Stable does not have generators, and building them from <a href="https://images.app.goo.gl/e2gUffHdtj9WUKyZ8">stone
+knives and bear skins</a> didn't seem reasonable. Fortunately, there was a Crate
+for that: <a href="http://docs.rs/genawaiter/0.2.2/genawaiter/index.html">genawaiter</a>. This looked fantastic, and it probably is. But I
+was never able to chase out the referential peril that the compiler
+protects us from with this approach (probably me being stupid), so I
+looked elsewhere.</p>
+<p>I decided to bite the bullet and do the brute force thing of
+keeping a collection. This quickly became an unpleasant mess,
+most likely because (as above) I am (relative to Rust) stupid.</p>
+<p>Eventually, I decided to be old school. As a, venerable C programmer,
+I tended to structure code to send data <em>down</em> the call stack as
+much as possible and to rarely send it <em>up</em> the stack. The obvious
+reason for this is that callers up the stack can manage their own
+crap, so the callees don't need to worry about allocation and
+cleanup.</p>
 <h2 id="future-work" class="section-header"><a href="#future-work">0.4 Future Work</a></h2>
 <ul>
 <li>There are <em>NO DOC COMMENTS</em></li>
 <li>Colo(u)rs using the <a href="https://rust-lang-nursery.github.io/rust-cookbook/cli/ansi_terminal.html#ansi-terminal">ANSI term crate</a></li>
 <li>Make to be more OO?</li>
+<li>Did I mention <em>DOC COMMENTS</em>?</li>
+<li>Unit tests?</li>
+<li>Integration tests?</li>
 </ul>
 
     

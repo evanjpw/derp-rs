@@ -16,7 +16,7 @@
 //! to teach Rust. I must be onto something.)
 //!
 //! ## Usage
-//! ```
+//! ```text
 //! USAGE:
 //! derp [FLAGS] <PATTERN> [PATH]...
 //!
