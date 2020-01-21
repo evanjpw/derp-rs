@@ -128,9 +128,34 @@ much as possible and to rarely send it <em>up</em> the stack. The obvious
 reason for this is that callers up the stack can manage their own
 crap, so the callees don't need to worry about allocation and
 cleanup.</p>
+<p>Since the function to process search results would be at
+the bottom of the call chain, that meant providing the
+result processing function as an argument to the search,
+to be called for each result.</p>
+<p>This went swimmingly.</p>
+<p>I made one decision entirely to make myself use language
+features:</p>
+<p>The search function needs to take a pattern, a
+search result function, an optional collection of paths
+&amp; a debug flag. This in and of itself is not an issue,
+but the cleanest way to realize search is as three
+functions (I gratuitously made it four), of which only
+the one lowest on the call stack uses the pattern and
+search result function.</p>
+<p>This is actually not an issue, because Rust has
+nesting functions, so the lower functions can nest in
+the top function and use its arguments directly. That
+would be clean and simple.</p>
+<p>What I <em>DID</em> was not that. Rather, I decided to create
+a <code>Context</code> struct to hold the stuff that needs to be
+passed down to the bottom function. There is no real
+justification for this, but it allowed me to write a
+constructor, a <code>Display</code> trait implementation and a
+<code>Debug</code> trait implementation. And that was fun.</p>
 <h2 id="future-work" class="section-header"><a href="#future-work">0.4 Future Work</a></h2>
 <ul>
 <li>There are <em>NO DOC COMMENTS</em></li>
+<li>I <em>think</em> that there's a bug in the display of relative paths</li>
 <li>Colo(u)rs using the <a href="https://rust-lang-nursery.github.io/rust-cookbook/cli/ansi_terminal.html#ansi-terminal">ANSI term crate</a></li>
 <li>Make to be more OO?</li>
 <li>Did I mention <em>DOC COMMENTS</em>?</li>

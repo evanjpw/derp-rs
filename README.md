@@ -1,3 +1,4 @@
+git add -A
 # derp-rs
 
 A crappy knockoff of "grep" that exists only as a way to teach myself Rust.
@@ -123,9 +124,39 @@ reason for this is that callers up the stack can manage their own
 crap, so the callees don't need to worry about allocation and
 cleanup.
 
+Since the function to process search results would be at
+the bottom of the call chain, that meant providing the
+result processing function as an argument to the search,
+to be called for each result.
+
+This went swimmingly.
+
+I made one decision entirely to make myself use language
+features:
+
+The search function needs to take a pattern, a
+search result function, an optional collection of paths
+& a debug flag. This in and of itself is not an issue,
+but the cleanest way to realize search is as three
+functions (I gratuitously made it four), of which only
+the one lowest on the call stack uses the pattern and
+search result function.
+
+This is actually not an issue, because Rust has
+nesting functions, so the lower functions can nest in
+the top function and use its arguments directly. That
+would be clean and simple.
+
+What I _DID_ was not that. Rather, I decided to create
+a `Context` struct to hold the stuff that needs to be
+passed down to the bottom function. There is no real
+justification for this, but it allowed me to write a
+constructor, a `Display` trait implementation and a
+`Debug` trait implementation. And that was fun.
 
 ## Future Work
  * There are *NO DOC COMMENTS*
+ * I _think_ that there's a bug in the display of relative paths
  * Colo(u)rs using the [ANSI term crate][4]
  * Make to be more OO?
  * Did I mention _DOC COMMENTS_?
