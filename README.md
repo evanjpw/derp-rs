@@ -1,4 +1,3 @@
-git add -A
 # derp-rs
 
 A crappy knockoff of "grep" that exists only as a way to teach myself Rust.
